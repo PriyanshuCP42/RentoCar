@@ -18,7 +18,7 @@ function Home() {
   }
   return (
     <div>
-        <h1 className='font-extrabold text-2xl text-blue-400'>Welcome to RentoCar</h1>
+        <h1 className='font-extrabold text-2xl text-blue-400'>Welcome to website</h1>
       <h1 className='font-semibold'>{loggedInUser}</h1>
       <button onClick={handleLogout}>Logout</button>
       <ToastContainer/>
