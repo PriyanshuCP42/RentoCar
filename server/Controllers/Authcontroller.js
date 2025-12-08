@@ -1,60 +1,78 @@
-// Signup logic
+import UserModel from "../Models/User.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const UserModel = require("../Models/User")
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const generateToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET);
+};
 
-const signup = async (req, res) => {
+// ------------------- SIGNUP --------------------
+export const signup = async (req, res) => {
     try {
-        const { name, email, password } = req.body
-        const user = await UserModel.findOne({
-            email
-        })
-        if (user) {
-            return res.status(409).json({ message: 'User already exists.' })
-        }
-        // For updating details of user after hasing the password then it will save in our database.
-        const userModel = new UserModel({ name, email, password })
-        userModel.password = await bcrypt.hash(password, 10)
-        await userModel.save()
+        const { name, email, password } = req.body;
 
-        return res.status(201).json({ message: "SignUp Successfully" })
+        const existingUser = await UserModel.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({ message: "User already exists." });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await UserModel.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        const token = generateToken(newUser._id.toString());
+
+        return res.status(201).json({
+            message: "SignUp Successfully",
+            token,
+        });
+
     } catch (err) {
-        return res.status(500).json({ message: "Internal Server Error" })
+        console.log(err.message);
+        return res.status(500).json({ message: err.message });
     }
-}
+};
 
-const login = async (req, res) => {
+// ------------------- LOGIN --------------------
+export const login = async (req, res) => {
     try {
-        const {email, password } = req.body
-        const user = await UserModel.findOne({
-            email
-        })
+        const { email, password } = req.body;
+
+        const user = await UserModel.findOne({ email });
         if (!user) {
-            return res.status(403).json({ message: 'Auth failed email or password is wrong' })
+            return res.status(403).json({ message: "User not found" });
         }
-        const isPasswordEqual = await bcrypt.compare(password, user.password)
+
+        const isPasswordEqual = await bcrypt.compare(password, user.password);
         if (!isPasswordEqual) {
-            return res.status(403).json({ message: 'Auth failed email or password is wrong' })
+            return res.status(403).json({ message: "Invalid Credentials" });
         }
-        // creation of JWT token 
-        const jwtToken = jwt.sign(
-            { email: user.email, _id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        )
+
+        const token = generateToken(user._id.toString());  // FIXED
+
         return res.status(200).json({
             message: "Login Success",
-            jwtToken,
-            email,
-            name: user.name
-        })
-    } catch (err) {
-        return res.status(500).json({ message: "Internal Server Error" })
-    }
-}
+            token,
+        });
 
-module.exports = {
-    signup,
-    login
-}
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).json({ message: err.message });
+    }
+};
+
+// Get user data using JWT
+export const getUserData = async (req, res) => {
+    try {
+        const { user } = req;
+        return res.status(200).json({ user });
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).json({ message: err.message });
+    }
+};
+

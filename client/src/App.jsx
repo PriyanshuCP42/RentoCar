@@ -1,20 +1,62 @@
-import React from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
-import Login from './pages/Login'
+import React, { useState } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+
 import Home from './pages/Home'
-import SignUp from './pages/Signup'
+// import SignUp from './pages/Signup'
+import Navbar from './components/Navbar'
+import CarDetails from './pages/CarDetails'
+import Cars from './pages/Cars'
+import MyBookings from './pages/MyBookings'
+import Footer from './components/Footer'
+import Layout from './pages/owner/Layout'
+import Dashboard from './pages/owner/Dashboard'
+import AddCar from './pages/owner/AddCar'
+import ManageCars from './pages/owner/ManageCars'
+import ManageBookings from './pages/owner/ManageBookings'
+import Login from './components/Login'
 
 const App = () => {
+  const [showLogin, setShowLogin] = useState(false)
+  const isOwnerPath = useLocation().pathname.startsWith('/owner')
   return (
-    <div>
+    <>
+      {showLogin && <Login setShowLogin={setShowLogin}/>}
+      
+      {!isOwnerPath &&
+        <Navbar setShowLogin={setShowLogin} />
+      }
       <Routes>
-        <Route path='/' element={<Navigate to='/login'/>}/>
-        <Route path='/signup' element={<SignUp/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/home' element={<Home/>}/>
+        <Route path='/' element={<Home />} />
+        <Route path='/car-details/:id' element={<CarDetails />} />
+        <Route path='/cars' element={<Cars />} />
+        <Route path='/my-bookings' element={<MyBookings />} />
+
+        <Route path='/owner' element={<Layout/>}>
+          <Route index element={<Dashboard/>}/>
+          <Route path='add-car' element={<AddCar/>}/>
+          <Route path='manage-cars' element={<ManageCars/>}/>
+          <Route path='manage-bookings' element={<ManageBookings/>}/>
+        </Route>  
       </Routes>
-    </div>
+
+      {!isOwnerPath && <Footer />}
+
+    </>
   )
 }
 
 export default App
+
+
+
+
+
+
+
+{/* <Routes>
+         <Route path='/' element={<Navigate to='/login'/>}/>
+        <Route path='/signup' element={<SignUp/>}/>
+        <Route path='/login' element={<Login/>}/>
+        <Route path='/home' element={<Home/>}/> 
+        
+      </Routes> */}
