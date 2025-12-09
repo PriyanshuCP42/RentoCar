@@ -9,19 +9,7 @@ import Testimonial from '../components/Testimonial';
 import NewsLetter from '../components/NewsLetter';
 import Footer from '../components/Footer';
 function Home() {
-  // const [loggedInUser, setLoggedInUser] = useState('');
-  //   const navigate=useNavigate()
-  // useEffect(() => {
-  //   setLoggedInUser(localStorage.getItem('loggedInUser'));
-  // }, []);
-  // const handleLogout=()=>{
-  //   localStorage.removeItem('token')
-  //   localStorage.removeItem('loggedInUser')
-  //   handleSuccess("User Loggedout")
-  //   setTimeout(()=>{
-  //       navigate('/login')
-  //   },1000)
-  // }
+
   return (
     <>
     <Hero/>
