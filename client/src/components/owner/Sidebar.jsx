@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { assets, ownerMenuLinks } from '../../assets/asset'
 import { NavLink, useLocation } from 'react-router-dom'
-import SideBar from '../../components/owner/SideBar'
 import Loader from '../Loader'
 import { useAppContext } from '../../context/AppContext'
 import { toast } from 'react-hot-toast'
